@@ -22,11 +22,8 @@ score_label.pack(pady=5)
 
 for row in range(board_size):
     for col in range(board_size):
-        display_text = str(col)+str(row) 
-        
         label = tk.Label(
             board_frame,
-            text=display_text,
             width=4,
             height=2,
             bg="white",
