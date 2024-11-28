@@ -1,15 +1,52 @@
 import tkinter as tk
 import random
 import time 
+import json
+import pygame
+
+with open('scores.json', 'r') as file:
+    data = json.load(file)
 
 direction_of_snake = "w"
 snake_body = []
 score = 0
+high_score = data["high_score"]
+high_score_player = data["player"]
+player = ""
+
+
+def get_input_and_continue():
+    global player
+    player = entry.get()
+    
+    entry.destroy()
+    submit_button.destroy()
+    root0.destroy()
+
+root0 = tk.Tk()
+root0.title("Input Example")
+
+entry = tk.Entry(root0, width=30)
+entry.pack(pady=10)
+
+submit_button = tk.Button(root0, text="Submit", command=get_input_and_continue)
+submit_button.pack(pady=10)
+
+root0.mainloop()
+
 
 root = tk.Tk()
 root.title("Snake Game Board")
 
+pygame.init()
+pygame.mixer.init()
 
+pygame.mixer.music.load("music.mp3")
+pygame.mixer.music.set_volume(0.5)  
+pygame.mixer.music.play(-1) 
+
+high_score_label = tk.Label(text="The high score is: "+ str(data["high_score"])+"  - "+data["player"])
+high_score_label.pack()
 board_size = 9
 
 board_labels = [[None for _ in range(board_size)] for _ in range(board_size)]
@@ -28,19 +65,28 @@ for row in range(board_size):
             height=2,
             bg="white",
             relief="solid",
-            borderwidth=1,
-            fg="#8a8a8a"
+            borderwidth=0,
+            fg="#8a8a8a",
+            padx=0,
+            pady=0
         )
         label.grid(row=row, column=col, padx=1, pady=1)
-        
         board_labels[col][row] = label
 
 
 def play_again():
+    global high_score
     for row in range(board_size):
         for col in range(board_size):
             board_labels[col][row].config(bg="#ffffff")
     button.destroy()
+    if score > high_score:
+        high_score = score
+        data["high_score"] = high_score
+        data["player"] = player
+        high_score_label.config(text="The high score is: "+ str(data["high_score"])+"  - "+data["player"])
+        with open('scores.json', 'w') as file:
+            json.dump(data, file, indent=4)
     start_game()
 
 def game_on():
